@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace maxElementsofMatrix
@@ -37,6 +35,7 @@ namespace maxElementsofMatrix
             }
             data[row, column] = value;
         }
+
         public int[] FindMaxElements()
         {
             int[] maxElements = new int[Rows];
@@ -100,6 +99,7 @@ namespace maxElementsofMatrix
                 data[row, column] = value;
             }
         }
+
         public void Print()
         {
             for (int i = 0; i < Rows; i++)

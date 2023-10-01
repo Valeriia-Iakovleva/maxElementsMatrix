@@ -1,5 +1,6 @@
 ﻿using maxElementsofMatrix;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 class Program
 {
@@ -12,27 +13,51 @@ class Program
 
         int threadCount = GetThreadCountFromConfig(configuration);
 
-        Matrix matrix = new Matrix(3, 3);
+        Console.WriteLine(threadCount);
 
-        matrix[0, 0] = 1;
-        matrix[0, 1] = 2;
-        matrix[0, 2] = 3;
-        matrix[1, 0] = 4;
-        matrix[1, 1] = 5;
-        matrix[1, 2] = 6;
-        matrix[2, 0] = 7;
-        matrix[2, 1] = 8;
-        matrix[2, 2] = 9;
+        int Rows = 10000; 
+        int Columns = 10000;
+       
 
-        matrix.Print();
-
-        int[] maxElements = matrix.FindMaxElementsThreads(threadCount);
-
-        Console.WriteLine("Vector of Maximum Elements:");
-        foreach (int maxElement in maxElements)
+        Matrix matrix = new Matrix(Rows, Columns);
+        Random random = new Random();
+        for (int i = 0; i < Rows; i++)
         {
-            Console.WriteLine(maxElement);
+            for (int j = 0; j < Columns; j++)
+            {
+                matrix.SetValue(i, j, random.Next(100)); 
+            }
         }
+
+        Stopwatch stopwatchParallel = new Stopwatch();
+        stopwatchParallel.Start();
+
+        int[] maxElementsParallel = matrix.FindMaxElementsThreads(threadCount);
+
+        stopwatchParallel.Stop();
+        double timeParallel = stopwatchParallel.ElapsedMilliseconds;
+
+        // Time the execution of FindMaxElements (single-threaded)
+        Stopwatch stopwatchSingleThread = new Stopwatch();
+        stopwatchSingleThread.Start();
+
+        int[] maxElementsSingleThread = matrix.FindMaxElements();
+
+        stopwatchSingleThread.Stop();
+        double timeSingleThread = stopwatchSingleThread.ElapsedMilliseconds;
+
+        double speedup = timeSingleThread / timeParallel;
+
+        double efficiency = timeSingleThread / (threadCount * timeParallel);
+
+        double cost = threadCount * timeParallel;
+
+        Console.WriteLine($"timeSingleThread (ms): {timeSingleThread}");
+        Console.WriteLine($"timeParallel (ms): {timeParallel}");
+
+        Console.WriteLine($"Speedup (Sp): {speedup}");
+        Console.WriteLine($"Efficiency (Ep): {efficiency}");
+        Console.WriteLine($"Cost (Cp): {cost}");
     }
     static int GetThreadCountFromConfig(IConfiguration configuration)
     {
